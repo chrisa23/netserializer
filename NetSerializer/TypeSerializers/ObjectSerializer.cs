@@ -76,8 +76,23 @@ namespace NetSerializer
 					il.Emit(OpCodes.Ldarg_0);
 
 				il.Emit(OpCodes.Ldarg_1);
-				il.Emit(OpCodes.Ldarg_2);
-				il.Emit(type.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, type);
+
+				LocalBuilder local;
+
+				if (data.WriterUsesByRef)
+				{
+					local = il.DeclareLocal(type);
+					il.Emit(OpCodes.Ldarg_2);
+					//il.Emit(OpCodes.Unbox, type);
+					il.Emit(type.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, type);
+					il.Emit(OpCodes.Stloc, local);
+					il.Emit(OpCodes.Ldloca, local);
+				}
+				else
+				{
+					il.Emit(OpCodes.Ldarg_2);
+					il.Emit(type.IsValueType ? OpCodes.Unbox_Any : OpCodes.Castclass, type);
+				}
 
 				il.EmitCall(OpCodes.Call, data.WriterMethodInfo, null);
 

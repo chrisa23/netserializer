@@ -136,7 +136,7 @@ namespace NetSerializer
 				{
 					var dts = (IDynamicTypeSerializer)serializer;
 
-					typeData = new TypeData(typeID++, dts);
+					typeData = new TypeData(typeID++, dts, type.IsValueType);
 				}
 				else
 				{
@@ -160,7 +160,7 @@ namespace NetSerializer
 				if (!td.IsGenerated)
 					continue;
 
-				td.WriterMethodInfo = Helpers.GenerateDynamicSerializerStub(type);
+				td.WriterMethodInfo = Helpers.GenerateDynamicSerializerStub(type, td.WriterUsesByRef);
 				td.ReaderMethodInfo = Helpers.GenerateDynamicDeserializerStub(type);
 			}
 
@@ -206,7 +206,7 @@ namespace NetSerializer
 				if (!td.IsGenerated)
 					continue;
 
-				td.WriterMethodInfo = Helpers.GenerateStaticSerializerStub(tb, type);
+				td.WriterMethodInfo = Helpers.GenerateStaticSerializerStub(tb, type, td.WriterUsesByRef);
 				td.ReaderMethodInfo = Helpers.GenerateStaticDeserializerStub(tb, type);
 			}
 

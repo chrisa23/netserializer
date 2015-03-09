@@ -40,10 +40,10 @@ namespace NetSerializer
 			}
 		}
 
-		public static DynamicMethod GenerateDynamicSerializerStub(Type type)
+		public static DynamicMethod GenerateDynamicSerializerStub(Type type, bool useRef)
 		{
 			var dm = new DynamicMethod("Serialize", null,
-				new Type[] { typeof(Serializer), typeof(Stream), type },
+				new Type[] { typeof(Serializer), typeof(Stream), useRef ? type.MakeByRefType() : type },
 				typeof(Serializer), true);
 
 			dm.DefineParameter(1, ParameterAttributes.None, "serializer");
@@ -66,10 +66,10 @@ namespace NetSerializer
 		}
 
 #if GENERATE_DEBUGGING_ASSEMBLY
-		public static MethodBuilder GenerateStaticSerializerStub(TypeBuilder tb, Type type)
+		public static MethodBuilder GenerateStaticSerializerStub(TypeBuilder tb, Type type, bool useRef)
 		{
 			var mb = tb.DefineMethod("Serialize", MethodAttributes.Public | MethodAttributes.Static, null,
-				new Type[] { typeof(Serializer), typeof(Stream), type });
+				new Type[] { typeof(Serializer), typeof(Stream), useRef ? type.MakeByRefType() : type });
 			mb.DefineParameter(1, ParameterAttributes.None, "serializer");
 			mb.DefineParameter(2, ParameterAttributes.None, "stream");
 			mb.DefineParameter(3, ParameterAttributes.None, "value");
